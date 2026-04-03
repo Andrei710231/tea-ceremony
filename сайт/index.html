@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Китайское чаепитие ☯️</title>
+<style>
+body {
+  margin: 0;
+  font-family: Georgia, serif;
+  color: #f5e6c8;
+  text-align: center;
+  background: url('https://images.pexels.com/photos/36253266/pexels-photo-36253266.jpeg') no-repeat center/cover;
+  background-size: cover;
+  position: relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  z-index: -1;
+}
+.container { padding: 40px; }
+h1 { font-size: 36px; margin-bottom: 20px; }
+.card {
+  background: rgba(42,33,27,0.85);
+  margin: 10px auto;
+  padding: 15px;
+  width: 320px;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+button {
+  margin: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #a67c52;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+.steam {
+  font-size: 50px;
+  animation: float 2s infinite alternate;
+}
+@keyframes float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-12px); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="steam">☕</div>
+  <h1>Китайское чаепитие ☯️</h1>
+
+  <div class="card">
+    <b>1.</b> Выбери качественный чай (улун, пуэр, зелёный).<br>
+    <b>2.</b> Прогрей чайник и посуду горячей водой.<br>
+    <b>3.</b> Первую заварку слей — это «пробуждение» чая.<br>
+    <b>4.</b> Завари чай короткими проливами: 20–30 секунд вначале.<br>
+    <b>5.</b> Увеличивай время до 1 минуты для следующих проливов.<br>
+    <b>6.</b> Пей медленно и наслаждайся ароматом ☯️.<br>
+  </div>
+
+  <h3>Выбери чай:</h3>
+  <button onclick="tea('улун')">Улун</button>
+  <button onclick="tea('пуэр')">Пуэр</button>
+  <button onclick="tea('зелёный')">Зелёный</button>
+
+  <h3>Таймер заваривания:</h3>
+  <button onclick="startTimer(0.5)">30 сек</button>
+  <button onclick="startTimer(1)">1 мин</button>
+  <button onclick="startTimer(2)">2 мин</button>
+
+  <br><br>
+  <button onclick="tip()">Совет мастера</button>
+
+  <div id="timerDisplay" style="margin-top:20px;font-size:20px;"></div>
+
+  <br><br>
+  <h3>Фоновая музыка:</h3>
+  <button onclick="chooseTrack(0)">Спокойная флейта 🎵</button>
+  <button onclick="chooseTrack(1)">Медитативная китайская 🎶</button>
+  <button onclick="chooseTrack(2)">Атмосфера чайной комнаты 🌿</button>
+  <br><br>
+  <button id="musicBtn">Включить музыку</button>
+</div>
+
+<audio id="bgMusic" loop></audio>
+
+<script>
+// Треки
+const tracks = [
+  "https://cdn.pixabay.com/download/audio/2023/07/12/audio_54e910ee12.mp3?filename=chinese-flute-relaxing-music-13915.mp3",
+  "https://cdn.pixabay.com/download/audio/2022/10/22/audio_2c41c57e9f.mp3?filename=chinese-meditation-11706.mp3",
+  "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c7a3bc238b.mp3?filename=chinese-tea-room-10543.mp3"
+];
+
+let currentTrack = 0;
+let musicStarted = false;
+const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+
+// Кнопка Включить/Остановить музыку
+musicBtn.addEventListener("click", () => {
+  if (!musicStarted) {
+    music.src = tracks[currentTrack];
+    music.load();
+    music.play();
+    musicStarted = true;
+    musicBtn.textContent = "Остановить музыку";
+  } else if (music.paused) {
+    music.play();
+    musicBtn.textContent = "Остановить музыку";
+  } else {
+    music.pause();
+    musicBtn.textContent = "Включить музыку";
+  }
+});
+
+// Смена трека с гарантированной загрузкой
+function chooseTrack(index) {
+  currentTrack = index;
+  if (!musicStarted) {
+    alert("Сначала нажмите «Включить музыку»");
+    return;
+  }
+  music.pause();
+  music.src = tracks[index];
+  music.load();
+  music.addEventListener('canplaythrough', function playNew() {
+    music.play();
+    music.removeEventListener('canplaythrough', playNew);
+  });
+  musicBtn.textContent = "Остановить музыку";
+}
+
+// Чай и советы
+function tea(type) {
+  if(type === "улун") alert("Улун: баланс между зелёным и чёрным чаем 🍂");
+  else if(type === "пуэр") alert("Пуэр: глубокий, выдержанный вкус 🌑");
+  else alert("Зелёный чай: свежесть и лёгкость 🌿");
+}
+
+function tip() {
+  alert("Чай — это момент спокойствия и гармонии ☯️");
+}
+
+// Таймер
+let timerInterval;
+function startTimer(minutes) {
+  clearInterval(timerInterval);
+  let seconds = minutes * 60;
+  const display = document.getElementById("timerDisplay");
+  display.textContent = `Осталось: ${minutes}:00`;
+  timerInterval = setInterval(() => {
+    let m = Math.floor(seconds / 60);
+    let s = Math.floor(seconds % 60);
+    display.textContent = `Осталось: ${m}:${s < 10 ? '0'+s : s}`;
+    seconds--;
+    if(seconds < 0) {
+      clearInterval(timerInterval);
+      display.textContent = "Время вышло ☕";
+      alert("Чай готов! Наслаждайся ☯️");
+    }
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
